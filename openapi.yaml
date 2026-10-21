@@ -1,0 +1,124 @@
+openapi: 3.0.4
+info:
+  title: Balance Sheet
+  description: >-
+    Balance Sheet is a stock balance sheet API that returns the statement of
+    financial position for a US public company by ticker - assets, liabilities
+    and shareholders' equity - straight from SEC filings: current assets, cash,
+    receivables, current liabilities, equity and more. Paid plans add total
+    assets and liabilities, long-term debt, and liquidity and leverage ratios
+    like current ratio, quick ratio and debt-to-equity.
+  termsOfService: https://apiverve.com/terms/
+  contact:
+    name: APIVerve Support
+    email: hello@apiverve.com
+    url: https://apiverve.com/contact
+  version: 1.0.0
+externalDocs:
+  description: Learn more about APIVerve
+  url: https://docs.apiverve.com?utm_source=openapi
+servers:
+  - url: https://api.apiverve.com/
+paths:
+  /v1/balancesheet:
+    get:
+      summary: Balance Sheet
+      description: >-
+        Get the balance sheet for a company by ticker symbol. Optionally filter
+        to a specific fiscal year and quarter.
+      operationId: balancesheet
+      parameters:
+        - name: ticker
+          in: query
+          schema:
+            type: string
+          required: true
+          description: Stock ticker symbol (e.g. AAPL, MSFT, ADBE)
+          example: AAPL
+        - name: year
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: >-
+            Fiscal year to retrieve. Defaults to latest available. History
+            covers only the quarters captured so far; a missing period answers
+            404 listing the available ones.
+        - name: quarter
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: Fiscal quarter to retrieve. Defaults to latest available.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: status
+                  error:
+                    type: string
+                    description: error
+                  data:
+                    type: object
+                    description: data
+              example:
+                status: ok
+                error: null
+                data:
+                  ticker: AAPL
+                  company: Apple Inc.
+                  cik: '0000320193'
+                  fiscalYear: 2025
+                  fiscalQuarter: 4
+                  filingType: 10-K
+                  filingDate: '2025-10-31'
+                  periodEnd: '2025-09-27'
+                  balance:
+                    totalAssets: 359241000000
+                    currentAssets: 147957000000
+                    cash: 35934000000
+                    receivables: 39777000000
+                    inventory: 5718000000
+                    propertyAndEquipment: 49834000000
+                    goodwill: null
+                    intangibles: null
+                    totalLiabilities: 285508000000
+                    currentLiabilities: 165631000000
+                    accountsPayable: 69860000000
+                    longTermDebt: 78328000000
+                    equity: 73733000000
+                    retainedEarnings: -14264000000
+                  ratios:
+                    currentRatio: 0.89
+                    quickRatio: 0.86
+                    cashRatio: 0.22
+                    workingCapital: -17674000000
+                    debtToEquity: 3.87
+                    debtToAssets: 0.79
+                    longTermDebtToEquity: 1.06
+                    equityMultiplier: 4.87
+                  formatted:
+                    totalAssets: $359.24B
+                    totalLiabilities: $285.51B
+                    equity: $73.73B
+                    workingCapital: -$17.67B
+        '401':
+          description: Your request was not authorized, or your API Key was invalid
+        '404':
+          description: Requested resource was not found
+        '500':
+          description: A server error has occurred, try again later
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header
+security:
+  - api_key: []
